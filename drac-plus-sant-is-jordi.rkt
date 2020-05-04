@@ -34,8 +34,7 @@
 
 ;----------------------------------------------------------------------------------------------------
 ; solutions = ((DRAC SANT JØRDI (A C D I J N Ø R S T)) ...)
-; in which every letter stands for a decimal digit.
-; (and (= (+ DRAC SANT) JØRDI) (equal? (sort (list A C D I J N Ø R S T) <) (range 10)))
+; in which (A C D I J N Ø R S T) is a permutation of (0 1 2 3 4 5 6 7 8 9) and DRAC + SANT = JØRDI.
 ;----------------------------------------------------------------------------------------------------
 
 (define solutions ; J=0 included.
