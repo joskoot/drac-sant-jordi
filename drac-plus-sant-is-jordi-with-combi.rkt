@@ -63,12 +63,12 @@
     (I (in-value (find-decimal-digit JØRDI 0)))
     #:when
     (and
+     (= (find-decimal-digit JØRDI 1) D) 
+     (= (find-decimal-digit JØRDI 2) R)
      (not (check-duplicates (list J Ø I) =))
      (not (member J combination =))
      (not (member Ø combination =))
-     (not (member I combination =))
-     (= (find-decimal-digit JØRDI 1) D) 
-     (= (find-decimal-digit JØRDI 2) R)))
+     (not (member I combination =))))
    (list DRAC SANT JØRDI (list A C D I J N Ø R S T)))
   (λ (x y)
    (or (< (caddr x) (caddr y))
