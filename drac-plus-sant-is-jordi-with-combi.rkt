@@ -43,7 +43,7 @@
  (λ (stx) (raise-syntax-error 'in-values "can only be used in for forms" stx))
  (λ (stx)
   (syntax-case stx ()
-   (((id ...) (_ expr)) (andmap identifier? (syntax->list #'(id ...)))
+   (((id ...) (_ expr))
   #'((id ...) (:do-in (((id ...) expr)) #t () #t () #t #f ()))))))
 
 (define (digits->number . digits)
