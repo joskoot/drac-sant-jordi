@@ -33,21 +33,21 @@
 
 ;----------------------------------------------------------------------------------------------------
 ; solutions = ((DRAC SANT JØRDI (A C D I J N Ø R S T)) ...)
-; in which (A C D I J N Ø R S T) is a permutation of (0 1 2 3 4 5 6 7 8 9) and DRAC + SANT = JØRDI.
+; In each solution
+; (A C D I J N Ø R S T) is a permutation of
+; (0 1 2 3 4 5 6 7 8 9) and
+; DRAC + SANT = JØRDI.
 ;----------------------------------------------------------------------------------------------------
 
-(define-syntax (in-values stx)
- (syntax-case stx ()
-  ((_ expr)
- #'(make-do-sequence
-    (λ ()
-     (values
-      (λ (p) expr)
-      (λ (p) #f)
-      #t
-      (λ (p) p)
-      #f
-      #f))))))
+(define-sequence-syntax in-values
+ (λ (stx) (raise-syntax-error 'in-values "can only be used in for forms" stx))
+ (λ (stx)
+  (syntax-case stx ()
+   (((id ...) (_ expr)) (andmap identifier? (syntax->list #'(id ...)))
+  #'((id ...) (:do-in (((id ...) expr)) #t () #t () #t #f ()))))))
+
+(define (digits->number . digits)
+ (for/fold ((number 0)) ((digit (in-list digits))) (+ (* 10 number) digit)))
 
 (define solutions ; J=0 included.
  (sort
@@ -55,8 +55,8 @@
    ((combination (in-combinations '(0 1 2 3 4 5 6 7 8 9) 7))
     (permutation (in-permutations combination))
     ((A C D N R S T) (in-values (apply values permutation)))
-    (DRAC  (in-value (+ (* 1000 D) (* 100 R) (* 10 A) C)))
-    (SANT  (in-value (+ (* 1000 S) (* 100 A) (* 10 N) T)))
+    (DRAC  (in-value (digits->number D R A C)))
+    (SANT  (in-value (digits->number S A N T)))
     (JØRDI (in-value (+ DRAC SANT)))
     (J (in-value (find-decimal-digit JØRDI 4)))
     (Ø (in-value (find-decimal-digit JØRDI 3)))
@@ -116,7 +116,7 @@
  
   (define (erase-zero x) (if (zero? x) "   " ((fmt "I3") x)))
  
-  (let ((f (fmt-cur "' | 'I5' |'US10D ' |'/")))
+  (let ((f (fmt-cur "' | ' I5 ' |' US10D ' |' /")))
    (for ((i 0-9))
     (let ((lst (for/list ((j 0-9)) (count (λ (x) (= (list-ref (cadddr x) j) i)) solutions))))
      (f i (map erase-zero lst)))))
