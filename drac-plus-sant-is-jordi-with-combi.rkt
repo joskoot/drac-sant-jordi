@@ -8,7 +8,7 @@
  Sant Jordi, día 23 de febrero
  -----------------------------
 
- Todas las permutaciones  (A C D N R S T J Ø I)
+ Todas las permutaciones  (A C D I J N Ø R S T)
  de los dígitos decimales (0 1 2 3 4 5 6 7 8 9) tal que:
 
        DRAC
