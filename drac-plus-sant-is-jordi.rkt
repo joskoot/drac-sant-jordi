@@ -1,6 +1,6 @@
 #lang racket
 
-; By Jacob J. A. Koot, 2020
+; By Jacob J. A. Koot, April 2020
 
 (require "../fmt/fmt.rkt") ; Nothing provided.
 
@@ -8,9 +8,9 @@
 
 (define header
  "
- ┌────────────────────────────────────┐
- │ Sant Jordi, día 23 de febrero 2020 │
- └────────────────────────────────────┘
+ ┌──────────────────────────────────┐
+ │ Sant Jordi, día 23 de Abril 2020 │
+ └──────────────────────────────────┘
 
  Todas las permutaciones  (A C D I J N O R S T)
  de los dígitos decimales (0 1 2 3 4 5 6 7 8 9) tal que:
@@ -25,7 +25,7 @@
 
 ;----------------------------------------------------------------------------------------------------
 
-(define (make-list-of-solutions) ; J=0 included.
+(define (make-list-of-unnumered-solutions) ; J=0 included.
  (sort
   (for*/list ; nr of iterations: 10!/3! = 604800, the ones excluded by the when-clause included.
    ((combination (in-combinations '(0 1 2 3 4 5 6 7 8 9) 7))
@@ -46,37 +46,39 @@
      (not (member O combination =))
      (not (member I combination =))))
    (list DRAC SANT JORDI (list A C D I J N O R S T)))
-  solution<?))
+  unnumered-solution<?))
 
 ;----------------------------------------------------------------------------------------------------
 
-(define (display-solutions J=0-included?)
+(define (display-unnumered-solutions J=0-included?)
 
  (define numbered-solutions
   (for/list
    ((n (in-naturals 1))
-    (solution (in-list solutions))
-    #:when (or J=0-included? (J=1? solution)))
-    (cons n solution)))
+    (unnumered-solution (in-list unnumered-solutions))
+    #:when (or J=0-included? (J=1? unnumered-solution)))
+    (cons n unnumered-solution)))
 
  (define JORDIS (map fourth numbered-solutions))
+
+ (define nr-of-solutions (length numbered-solutions))
 
  (fmt0 J=0-included?)
 
  (if J=0-included?
   (fmt1
-   (length numbered-solutions)
-   (count (λ (JORDI) (> JORDI  9999)) JORDIS)
-   (count (λ (JORDI) (< JORDI 10000)) JORDIS))
-  (fmt2 (length numbered-solutions)))
+   nr-of-solutions
+   (count (λ (JORDI) (< JORDI 10000)) JORDIS)
+   (count (λ (JORDI) (> JORDI  9999)) JORDIS))
+  (fmt2 nr-of-solutions))
 
  (fmt-3-4-5a numbered-solutions)
 
  (for ((i 0-9))
-  (let ((lst (for/list ((j 0-9)) (count (λ (x) (= (list-ref (digits x) j) i)) numbered-solutions))))
-   (fmt5b i (map erase-zero lst))))
+  (let ((lst (for/list ((j 0-9)) (count (λ (x) (= (list-ref (fifth x) j) i)) numbered-solutions))))
+   (fmt5b i (map fmt-digit lst))))
 
- (fmt-5c-6 (length numbered-solutions)))
+ (fmt-5c-6 nr-of-solutions))
 
 ;----------------------------------------------------------------------------------------------------
 
@@ -89,16 +91,13 @@
 (define line5b (fmt "'    ├───────┼───────────────────────────────┤\n'"))
 (define line5c (fmt "'    └───────┴───────────────────────────────┘\n'"))
 (define fmt0 (fmt 'cur line0a "' │ Soluciones con J=0 ' Q'incluidas │' 'excluidas │' S/" line0b "/"))
-(define fmt1 (fmt 'cur "' Hay 'I2' soluciones, 'I2' con J=1 y 'I2' con J=0:'/"))
+(define fmt1 (fmt 'cur "' Hay 'I2' soluciones, 'I2' con J=0 y 'I2' con J=1:'/"))
 (define fmt2 (fmt 'cur "' Hay ' I2 ' soluciones:'/"))
 (define fmt5a (fmt 'cur line5a "'    │ valor │  A  C  D  I  J  N  O  R  S  T │'/" line5b))
 (define fmt5b (fmt 'cur "'    │ 'I5' │'US10D' │'/"))
 (define fmt5c (fmt 'cur line5c "/"))
-(define digits fifth)
-(define jordi caddr)
-(define sant cadr)
 (define fmtXI2 (fmt "XI2"))
-(define (erase-zero x) (if (zero? x) "   " (fmtXI2 x)))
+(define (fmt-digit x) (if (zero? x) "   " (fmtXI2 x)))
 (define 0-9 (in-range 0 10))
 (define (find-digit n significance) (modulo (quotient n significance) 10))
 (define (J=1? solution) (>= (third solution) 10000))
@@ -128,23 +127,26 @@
 (define fmt-3-4-5a (fmt 'cur fmt3 fmt4 fmt5a))
 (define fmt-5c-6 (fmt 'cur fmt5c fmt6))
 
-(define (solution<? x y)
- (let ((xj (jordi x)) (yj (jordi y)))
-  (or (< xj yj) (and (= xj yj) (< (sant x) (sant y))))))
+(define (unnumered-solution<? solution-a solution-b)
+ (let ((jordi-a (third solution-a)) (jordi-b (third solution-b)))
+  (or
+   (< jordi-a jordi-b)
+   (and (= jordi-a jordi-b) (< (second solution-a) (second solution-b))))))
 
 (define-sequence-syntax in-values
  (λ (stx) (raise-syntax-error 'in-values "can be used in for forms only" stx))
  (λ (stx)
   (syntax-case stx ()
    (((id ...) (_ expr))
-  #'((id ...) (:do-in (((id ...) expr)) #t () #t () #t #f ()))))))
+  #'((id ...) (:do-in (((id ...) expr)) #t () #t () #t #f ())))
+   (else (raise-syntax-error 'in-values "bad in-values clause in for form" stx)))))
 
 ;----------------------------------------------------------------------------------------------------
 
-(define solutions (make-list-of-solutions))
+(define unnumered-solutions (make-list-of-unnumered-solutions))
 (display header)
-(display-solutions #t)
-(display-solutions #f)
+(display-unnumered-solutions #t)
+(display-unnumered-solutions #f)
 
 ;----------------------------------------------------------------------------------------------------
 
