@@ -2,7 +2,7 @@
 
 ; By Jacob J. A. Koot, April 2020
 
-(require "../fmt/fmt.rkt") ; Nothing provided.
+(require fmt/fmt.rkt) ; Nothing provided.
 
 ;----------------------------------------------------------------------------------------------------
 
